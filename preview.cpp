@@ -1,7 +1,12 @@
-#include <iostream>
+/*
+1. numbers에 수학 상수 추가
+2. 구현 여부가 불확실한(미래에 구현 될 수 있는) feature들이 구현되어 있는지 확인할 수 있는 macro 제공
+*/
 
+#include <iostream>
 #include <numbers>
-void test_numbers() {
+
+void numbers() {
 
     std::cout << std::numbers::pi << std::endl;
     std::cout << std::numbers::e << std::endl;
@@ -10,7 +15,7 @@ void test_numbers() {
 
 #include <span>
 #include <chrono>
-void test_future_test_macro() {
+void future_test_macro() {
 #ifdef __cpp_concepts
     std::cout << "support concepts " << __cpp_concepts << std::endl;
 #endif
@@ -25,7 +30,7 @@ void test_future_test_macro() {
 #endif
 }
 
-int main() {
-    test_numbers();
-    test_future_test_macro();
+void preview() {
+    numbers();
+    future_test_macro();
 }
