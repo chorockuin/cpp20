@@ -88,10 +88,80 @@ void lambda_unique_ptr2() {
     unique_ptr<int, decltype(f)> p1(new int); // 이렇게 하면 c++17(심지어 c++11에서도)될 것 같지만, unique_ptr 소멸자에서 type D의 디폴트 생성자가 없기 때문에 안됨. c++20에서만 됨
 }
 
+#include <functional>
+struct Sample {
+    int value = 0;
+    auto foo() {
+        int n = 10;
+        // auto f = [=](int a) { return a + n + value; }; // [=] 표현은 모든 지역 변수를 캡쳐. 그리고 암시적으로 this 포인터도 캡쳐
+        auto f = [=, this](int a) { return a + n + value; }; // 이렇게 명시적으로 this 포인터 캡쳐를 알려야 경고가 뜨지 않음
+        std::cout << sizeof(f) << std::endl; // n + this 포인터. 따라서 size는 8
+        return f;
+    }
+
+    auto bar() {
+        int n = 10;
+        auto f = [=, *this](int a) { return a + n + value; }; // 명시적으로 this를 써 주자
+        std::cout << sizeof(f) << std::endl; // 모든 지역 변수 뿐 아니라 암시적 this 포인터도 캡쳐. 따라서 size는 8
+        return f;
+
+    }
+};
+
+std::function<int(int)> f;
+
+void goo() {
+    Sample s;
+    f = s.foo();
+    std::cout << f(10) << std::endl; // s가 캡쳐되어 a=10, n=10, value=0이 됨. 따라서 결과는 20
+}
+
+void hoo() {
+    Sample s;
+    f = s.bar();
+    std::cout << f(10) << std::endl; // s가 캡쳐되어 a=10, n=10, value=0이 됨. 따라서 결과는 20
+}
+
+
+void lambda_this_capture() {
+    goo();
+    std::cout << f(10) << std::endl; // s는 이미 파괴되었으므로, n=10, value=0을 가리키는 포인터들은 유효하지 않음. 따라서 결과는 쓰레기 값
+
+    hoo();
+    std::cout << f(10) << std::endl; // s를 값으로 캡쳐했으므로, n=10, value=0은 복제되어 있음. 따라서 결과는 20
+}
+
+template<typename ... Types> // 가변길이 템플릿. 가변의 타입을 Args로 추상화 시켜 받음
+auto f1(Types&&... args) { // Types 중에 r-value가 있을 수도 있기 때문에 r-value 참조 문법 && 사용
+    return [...lambda_args = std::forward<Types>(args)]() { // 파라미터 팩 args를 값으로 캡쳐해서 그대로 인자로 사용하는 lambda 정의
+        (std::cout << ... << lambda_args); 
+    };
+}
+
+template<typename ... Types> 
+auto f2(Types&&... args) {
+    return [&...lambda_args = std::forward<Types>(args)]() { // 파라미터 팩 args를 참조로 캡쳐
+        (std::cout << ... << lambda_args); 
+    };
+}
+
+void lambda_capture_parameter_pack() {
+    f1(1, 2, 3)();
+    
+    std::cout << std::endl;
+    
+    // f2(1, 2, 3)(); // r-value 파라미터 팩을 값으로 캡쳐하지 않고 참조로 캡쳐했으므로 에러 남
+
+    int a=1, b=2, c=3;
+    f2(a, b, c)();
+}
+
 void lambda() {
     lambda_template();
     lambda_unique_ptr1();
     lambda_unevaluated_expression();
     lmabda_default_constructor();
     lambda_unique_ptr2();
+    lambda_this_capture();
+    lambda_capture_parameter_pack();
 }
