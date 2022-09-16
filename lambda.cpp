@@ -147,13 +147,13 @@ auto f2(Types&&... args) {
 
 void lambda_capture_parameter_pack() {
     f1(1, 2, 3)();
-    
     std::cout << std::endl;
     
     // f2(1, 2, 3)(); // r-value 파라미터 팩을 값으로 캡쳐하지 않고 참조로 캡쳐했으므로 에러 남
 
     int a=1, b=2, c=3;
     f2(a, b, c)();
+    std::cout << std::endl;
 }
 
 void lambda() {
