@@ -5,6 +5,8 @@ extern void comparison();
 extern void designated_init();
 extern void const_expression();
 extern void etc();
+extern void concept_intro();
+extern void require_clauses();
 
 int main() {
     preview();
@@ -14,4 +16,6 @@ int main() {
     designated_init();
     const_expression();
     etc();
+    concept_intro();
+    require_clauses();
 }
