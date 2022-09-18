@@ -23,7 +23,7 @@ public:
     bool operator == (int other) const { return value == other; }
 };
 
-void three_way_comparison_operator() {
+static void three_way_comparison_operator() {
     int a = 10, b = 20;
     bool r1 = a < b;
     auto r2 = a <=> b;
@@ -82,7 +82,7 @@ public:
     // auto operator <=> (const Point3D& p) const = default; 
 };
 
-void three_way_comparison_operator_impl() {
+static void three_way_comparison_operator_impl() {
     Point3D p1{1, 2, 3}, p2{3, 2, 1};
 
     bool b1 = p1 == p2;
@@ -91,12 +91,12 @@ void three_way_comparison_operator_impl() {
     auto r = p1 <=> p2;
 }
 
-void three_way_comparison_operator_impl2() {
+static void three_way_comparison_operator_impl2() {
 }
 
 // std::strong_ordering : == 연산자의 의미를 상식적(메모리 내 값이 서로 같음)으로 정의하고 싶을 때 사용
 // std::weak_ordering : == 연산자의 의미를 클래스 작성자가 원하는 대로 정의하고 싶을 때 사용
-void three_way_comparison_operator_ordering1() {
+static void three_way_comparison_operator_ordering1() {
     int n1=10, n2=20;
     double d1=10, d2=20;
 
@@ -130,7 +130,7 @@ struct Rect {
     }
 };
 
-void three_way_comparison_operator_ordering2() {
+static void three_way_comparison_operator_ordering2() {
     Rect rt1(1, 1, 5, 2);
     Rect rt2(1, 1, 2, 5);
 
@@ -140,7 +140,7 @@ void three_way_comparison_operator_ordering2() {
     }
 }
 
-void three_way_comparison_operator_ordering3() {
+static void three_way_comparison_operator_ordering3() {
 }
 
 #include <string>
@@ -165,7 +165,7 @@ struct People {
     }
 };
 
-void three_way_comparison_operator_ordering4() {
+static void three_way_comparison_operator_ordering4() {
     People p1("kim", 20);
     People p2("Lee", -10);
 

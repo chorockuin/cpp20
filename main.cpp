@@ -4,6 +4,7 @@ extern void attributes();
 extern void comparison();
 extern void designated_init();
 extern void const_expression();
+extern void etc();
 
 int main() {
     preview();
@@ -12,4 +13,5 @@ int main() {
     comparison();
     designated_init();
     const_expression();
+    etc();
 }

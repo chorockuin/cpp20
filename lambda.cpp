@@ -12,7 +12,7 @@ auto add2 = [](auto a, auto b) {return a + b;}; // c++14. a와 b는 다른 type
 auto add3 = [](auto a, decltype(a) b) {return a + b;}; // a와 b를 같은 a type으로 만들었으나 컴파일 시에 오류를 발생시킬 수는 없음
 auto add4 = []<typename T>(T a, T b) {return a + b;}; // c++20. a와 b는 같은 type. 따라서 a와 b가 다른 타입으로 입력되면 컴파일 시에 오류를 발생시킴
 
-void lambda_template() {
+static void lambda_template() {
     std::cout << add1(1, 2) << std::endl;
     std::cout << add1(1.1, 2.2) << std::endl;
     std::cout << add1(1, 2.2) << std::endl;
@@ -39,15 +39,15 @@ struct Freer
     }  
 };
 
-void lambda_unique_ptr1() {
+static void lambda_unique_ptr1() {
     std::unique_ptr<int> up1(new int); // unique_ptr 소멸자에서 delete로 잘 소멸됨
     std::unique_ptr<int, Freer> up2(static_cast<int *>(malloc(100))); // unique_ptr 소멸자에서 delete로 소멸되면 안되므로, 함수 객체 type을 넣음
     // std::unique_ptr<int, [](int *p) {free(p);}> up3(static_cast<int *>(malloc(100))); // 람다는 임시 객체이므로 type에 들어갈 수 없음
     std::unique_ptr<int, decltype([](int *p) {free(p);})> up3(static_cast<int *>(malloc(100))); // 람다를 type으로 선언해서 넣으면 됨. c++17에선 안되지만 c++ 20에서는 됨
 }
 
-int add5(int a, int b); // {return a + b;} // sizeof() 내에 들어가는 함수라 평가되지 않으므로 구현이 필요 없음
-void lambda_unevaluated_expression() {
+static int add5(int a, int b); // {return a + b;} // sizeof() 내에 들어가는 함수라 평가되지 않으므로 구현이 필요 없음
+static void lambda_unevaluated_expression() {
     std::cout << sizeof(int) << std::endl;
     std::cout << sizeof(add5(1, 2)) << std::endl; // sizeof 안은 평가되지 않는 표현식(런타임에 평가 되지 않고 컴파일 타임에만 사용됨)
     decltype(add5(1, 2)) n; // 마찬가지로 평가되지 않는 표현식
@@ -56,7 +56,7 @@ void lambda_unevaluated_expression() {
     std::unique_ptr<int, decltype([](int *p) {delete p;})> up(new int); // 마찬가지로 람다를 type으로 선언해서 넣으면 됨. c++17에선 안되지만 c++ 20에서는 됨
 }
 
-void lmabda_default_constructor() {
+static void lmabda_default_constructor() {
     auto f = [](int a, int b) {return a + b;};
 
     decltype(f) f1; // c++17 에러. c++20 됨. 람다에 디폴트 생성자가 생겼다는 얘기
@@ -82,7 +82,7 @@ public:
     }
 };
 
-void lambda_unique_ptr2() {
+static void lambda_unique_ptr2() {
     // unique_ptr<int, decltype([](int *p){delete p;})> p1(new int); // c++17 에러, c++20 됨
     auto f = [](int *p){delete p;};
     unique_ptr<int, decltype(f)> p1(new int); // 이렇게 하면 c++17(심지어 c++11에서도)될 것 같지만, unique_ptr 소멸자에서 type D의 디폴트 생성자가 없기 때문에 안됨. c++20에서만 됨
@@ -110,20 +110,20 @@ struct Sample {
 
 std::function<int(int)> f;
 
-void goo() {
+static void goo() {
     Sample s;
     f = s.foo();
     std::cout << f(10) << std::endl; // s가 캡쳐되어 a=10, n=10, value=0이 됨. 따라서 결과는 20
 }
 
-void hoo() {
+static void hoo() {
     Sample s;
     f = s.bar();
     std::cout << f(10) << std::endl; // s가 캡쳐되어 a=10, n=10, value=0이 됨. 따라서 결과는 20
 }
 
 
-void lambda_this_capture() {
+static void lambda_this_capture() {
     goo();
     std::cout << f(10) << std::endl; // s는 이미 파괴되었으므로, n=10, value=0을 가리키는 포인터들은 유효하지 않음. 따라서 결과는 쓰레기 값
 
@@ -145,7 +145,7 @@ auto f2(Types&&... args) {
     };
 }
 
-void lambda_capture_parameter_pack() {
+static void lambda_capture_parameter_pack() {
     f1(1, 2, 3)();
     std::cout << std::endl;
     

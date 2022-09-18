@@ -11,7 +11,7 @@ struct Point2 {
     }
 };
 
-void aggregate_init() {
+static void aggregate_init() {
     int x[2] = {1, 2}; // 배열 x는 Aggregate 초기화 가능
     Point1 p1 = {1, 2}; // Point1 구조체도 Aggregate 초기화 가능
     // Point2 p2 = {1, 2}; // Point2 구조체는 virtual 메소드를 가지고 있으므로 Aggregate 초기화 불가능. 따라서 에러
@@ -34,12 +34,12 @@ struct Point3 {
     int z{20};
 };
 
-void printPoint3(Point3& p) {
+static void printPoint3(Point3& p) {
     printf("%d %d %d\n", p.x, p.y, p.z);
 }
 
 // Aggregate 초기화가 가능한 배열, 구조체(클래스)만 Designated 초기화 가능함
-void desinated_init1() {
+static void desinated_init1() {
     Point3 p1;
     Point3 p2 = {1,2,3};
     Point3 p3 = {1};
@@ -75,7 +75,7 @@ struct Rect {
 
 // c++에서는 무조건 생성자를 통해 초기화가 되는데, 생성자는 멤버 순서대로 초기화 함
 // 따라서 이에 위배되는 Designated 초기화를 하면 에러남
-void desinated_init2() {
+static void desinated_init2() {
     Point p1 = {.x=1, .y=2}; // ok
     // Point p2 = {.y=2, .x=1}; // c에서는 ok, c++에서는 error
     // Point p3 = {.x=1, 2}; // c에서는 ok, c++에서는 error

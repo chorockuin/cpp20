@@ -10,9 +10,9 @@
     return new int[size];
 }
 
-int foo() { return 0; }
+static int foo() { return 0; }
 
-void no_discard() {
+static void no_discard() {
     allocate(10); // [[nodiscard]] 명시하지 않으면 new한 포인터를 핸들링하지 않아도 아무런 경고가 뜨지 않음
 
     // std::future<int> r =
@@ -27,12 +27,12 @@ enum class [[nodiscard]] ErrorCode {OK, WARNING, CRITICAL, FATAL}; // enum 앞�
 
 ErrorCode goo() { return ErrorCode::CRITICAL; }
 
-void no_discard2() {
+static void no_discard2() {
     goo(); // [[nodiscard]] 덕분에 경고 발생
     MyType(1, true); // [[nodiscard]] 덕분에 경고 발생
 }
 
-int likely(int i) {
+static int likely(int i) {
     if (i > 0) [[likely]] // 여기를 탈 확률이 높다고 컴파일러에게 알려줘서 컴파일러가 최적화 가능하게 함
     // if (__bulitin_expect(i>0, 1)) // 리눅스 커널 소스에는 위와 동일한 의미로 이렇게 썼었음
         i += 2;
@@ -41,7 +41,7 @@ int likely(int i) {
     return i;
 }
 
-int unlikely(int i) {
+static int unlikely(int i) {
     if (i > 0) [[unlikely]] // 여기를 탈 확률이 적다고 컴파일러에게 알려줘서 컴파일러가 최적화 가능하게 함
     // if (__bulitin_expect(i>0, 0)) // 리눅스 커널 소스에는 위와 동일한 의미로 이렇게 썼었음
         i += 2;
@@ -71,7 +71,7 @@ struct EmptyData {
 };
 
 #include <iostream>
-void no_unique_address() {
+static void no_unique_address() {
     std::cout << sizeof(Empty) << std::endl;
     std::cout << sizeof(Data) << std::endl;
     std::cout << sizeof(EmptyData) << std::endl;
@@ -89,7 +89,7 @@ template<typename T, typename U> struct PAIR {
 // C++17 클래스 템플릿 타입 deduction 가이드
 template<typename A, typename B> PAIR(A&& a, B&& b) -> PAIR<A, B>;
 
-void no_unique_address2() {
+static void no_unique_address2() {
     // 메모리 주소와 삭제자를 보관
     // 삭제자는 캡쳐하지 않은 lambda 표현식이기 때문에 empty class
     PAIR pair(malloc(100), [](void *p) {free(p);});

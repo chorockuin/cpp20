@@ -57,7 +57,7 @@ void constexpr_virtual() {
 #include <numeric>
 #include <array>
 #include <vector>
-void constexpr_algorithm() {
+static void constexpr_algorithm() {
     // constexpr int x[10] = {1,2,3,4,5,6,7,8,9,10};
     constexpr std::array<int, 10> x = {1,2,3,4,5,6,7,8,9,10};
     // constexpr std::vector<int> x = {1,2,3,4,5,6,7,8,9,10}; c++ 표준에는 지원한다고 했으나 아직 cl에서 지원 안됨
@@ -74,7 +74,7 @@ constexpr int add1(int a, int b) { return a+b; }
 // consteval은 c++20 추가. 함수는 반드시 상수 표현식으로 나타낼 수 있어야 함. 이런 함수를 immediate function 이라고 부름
 consteval int add2(int a, int b) { return a+b; } 
 
-void const_evaluation() {
+static void const_evaluation() {
     int x=1, y=2;
 
     int r1 = add1(x, y); // ok
@@ -91,7 +91,7 @@ constexpr int c1 = 10; // 초기값을 컴파일 타임에 알아야 함. 상수
 constinit int v1 = 10; // 초기값을 컴파일 타임에 알아야 함. 변수
 // constinit int v2 = n; // error
 
-void const_initialization() {
+static void const_initialization() {
     // c1 = 20; // 상수를 변경하려고 했으니 error
     v1 = 20; // 변수를 변경하니 ok
 }
