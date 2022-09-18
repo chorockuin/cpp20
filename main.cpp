@@ -3,6 +3,7 @@ extern void lambda();
 extern void attributes();
 extern void comparison();
 extern void designated_init();
+extern void const_expression();
 
 int main() {
     preview();
@@ -10,4 +11,5 @@ int main() {
     attributes();
     comparison();
     designated_init();
+    const_expression();
 }
