@@ -61,8 +61,123 @@ void not_create_type_code_from_template() {
     gcd4(4.2f, 2.1f); 
 }
 
+#include <iostream>
+class Test {
+public:
+    virtual void f() {}
+};
+
+template<typename T> requires std::is_polymorphic_v<T> // type T에 가상함수가 들어있는지 확인하는 트레잇
+void hoo(const T& arg) {
+    std::cout << "type has virtual function" << std::endl;
+}
+
+template<typename T> requires (!std::is_polymorphic_v<T>)
+void hoo(const T& arg) {
+    std::cout << "type has no virtual function" << std::endl;
+}
+
+void function_overloading_with_requires() {
+    hoo(Test());
+}
+
+template<typename T> requires (!std::is_pointer_v<T>)
+void printv(const T& arg) {
+    std::cout << arg << std::endl;
+}
+
+template<typename T> requires std::is_pointer_v<T>
+void printv(const T& arg) {
+    std::cout << arg << " : " << *arg << std::endl;
+}
+
+void function_overloading_with_requires1() {
+    int n = 0;
+    printv(n);
+    printv(&n);
+}
+
+#include <vector>
+#include <list>
+template<typename T> requires std::random_access_iterator<T>
+void my_advance(T& p, int step) {
+    std::cout << "random access" << std::endl;
+    p += step;
+}
+
+template<typename T> requires std::input_iterator<T>
+void my_advance(T& p, int step) {
+    std::cout << "not random access" << std::endl;
+    while (step--) ++p;
+}
+
+void function_overloading_with_requires2() {
+    // std::vector c = {1,2,3,4,5,6,7,8,9,10};
+    std::list c = {1,2,3,4,5,6,7,8,9,10};
+
+    auto p = std::begin(c);
+    // p의 type이 vector의 경우 바로 +5 jump, list의 경우 +1을 5번
+    // std::advance(p, 5);
+
+    // std::advance를 직접 구현해 봄
+    // vector의 경우 random_access_iterator 이자 input_iterator 이지만
+    // 우선순위에 따라 random_access_iterator로 선택됨
+    // 우선순위는 concept에 따라 조정할 수 있음
+    my_advance(p, 5);
+
+    std::cout << *p << std::endl;
+}
+
+constexpr bool check() { return true; }
+
+template<typename T> requires true // 항상 만들어짐
+void f1(T a) {
+}
+
+template<typename T> requires false // error. 절대로 만들어지지 않음
+void f2(T a) {
+}
+
+template<typename T> requires std::is_pointer_v<T>
+void f3(T a) {
+}
+
+template<typename T> requires 1 // error. requires 뒤에는 bool 형만 올 수 있음
+void f4(T a) {
+}
+
+template<typename T> requires (check()) // requires 뒤에는 상수 표현식만 들어갈 수 있으므로 constexpr 함수 사용 가능
+void f5(T a) {
+}
+
+template<typename T> requires (sizeof(T) > 4)
+void f6(T a) {
+}
+
+void condition() {
+    f1(0);
+    // f2(0);
+    // f3(0);
+    // f4(0);
+    f5(0);
+    f6(0.3);
+}
+
+template<typename T>
+void g(T a) requires (sizeof(T) > 4) {
+}
+
+void position() {
+    g(3.5);
+}
+
 void require_clauses() {
     intro();
     error_message();
     not_create_type_code_from_template();
+    function_overloading_with_requires();
+    function_overloading_with_requires1();
+    function_overloading_with_requires2();
+    condition();
+    position();
 }
