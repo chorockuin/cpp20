@@ -9,6 +9,7 @@ extern void require_clauses();
 extern void concepts();
 extern void syntax_sugar();
 extern void standard_concepts();
+extern void ranges();
 
 int main() {
     preview();
@@ -22,4 +23,5 @@ int main() {
     concepts();
     syntax_sugar();
     standard_concepts();
+    ranges();
 }
