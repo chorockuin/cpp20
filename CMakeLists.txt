@@ -1,6 +1,3 @@
-# 옵션
-OPTION (WINDOWS "" OFF)
-
 # 요구 CMake 최소 버전
 CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
  
@@ -22,13 +19,8 @@ FILE(GLOB SRC_FILES
 SET (TARGET_FILE "${CMAKE_PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 # 컴파일러
-IF (WINDOWS)
-        SET (CMAKE_C_COMPILER "C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe")
-        SET (CMAKE_CXX_COMPILER "C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe")
-ELSE ()
-        SET (CMAKE_C_COMPILER "/usr/bin/gcc-12")
-        SET (CMAKE_CXX_COMPILER "/usr/bin/gcc-12")
-ENDIF ()
+SET (CMAKE_C_COMPILER "/usr/bin/gcc-12")
+SET (CMAKE_CXX_COMPILER "/usr/bin/gcc-12")
 
 # 헤더 파일 Include 디렉토리 (-I)
 INCLUDE_DIRECTORIES()

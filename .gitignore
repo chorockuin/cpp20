@@ -3,4 +3,6 @@
 *.obj
 *.pdb
 .vscode
+CMakeCache.txt
+CMakeFiles/
 build/

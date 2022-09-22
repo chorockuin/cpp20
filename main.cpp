@@ -7,6 +7,8 @@ extern void const_expression();
 extern void etc();
 extern void require_clauses();
 extern void concepts();
+extern void syntax_sugar();
+extern void standard_concepts();
 
 int main() {
     preview();
@@ -18,4 +20,6 @@ int main() {
     etc();
     require_clauses();
     concepts();
+    syntax_sugar();
+    standard_concepts();
 }
