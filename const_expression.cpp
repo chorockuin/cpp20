@@ -65,8 +65,8 @@ static void constexpr_algorithm() {
     constexpr int c = std::accumulate(std::begin(x), std::end(x), 0);
     std::cout << c << std::endl;
 
-    constexpr auto p = std::find(std::begin(x), std::end(x), 3);
-    std::cout << *p << std::endl;
+    // constexpr auto p = std::find(std::begin(x), std::end(x), 3);
+    // std::cout << *p << std::endl;
 }
 
 // constexpr은 c++11에 추가. 함수 또는 변수는 상수 표현식으로 나타낼 수도 있음

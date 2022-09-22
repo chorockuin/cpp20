@@ -142,9 +142,9 @@ template<typename T> requires std::is_pointer_v<T>
 void f3(T a) {
 }
 
-template<typename T> requires 1 // error. requires 뒤에는 bool 형만 올 수 있음
-void f4(T a) {
-}
+// template<typename T> requires 1 // error. requires 뒤에는 bool 형만 올 수 있음
+// void f4(T a) {
+// }
 
 template<typename T> requires (check()) // requires 뒤에는 상수 표현식만 들어갈 수 있으므로 constexpr 함수 사용 가능
 void f5(T a) {
