@@ -127,6 +127,52 @@ void ref_view3() {
     std::cout << typeid(rv3).name() << std::endl;
 }
 
+void reverse_view() {
+    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+
+    // view class template을 직접 써서 view를 만듬
+    std::ranges::reverse_view rv1(v);
+
+    // 아래의 경우 친절하게 type까지 적었지만 예상과 다르게 에러난다. 왜냐?
+    // 내부적으로 vector<int>가 아니라 ref_view로 추론되기 때문이다
+    // std::ranges::reverse_view<std::vector<int>> rv2(v);
+    // 그래서 이렇게 해야 에러가 안난다
+    std::ranges::reverse_view<std::ranges::ref_view<std::vector<int>>> rv2(v);
+
+    // 이렇게 range adaptor object를 써도 된다
+    // range adaptor object는 함수 객체다
+    auto rv3 = std::views::reverse(v);
+
+    for (auto n : rv1) {
+        std::cout << n << ",";
+    }
+    std::cout << std::endl;
+}
+
+void filter_view() {
+    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+
+    std::ranges::filter_view fv1(v, [](int n) {return n%2 == 0;});
+    std::ranges::take_view tv1(fv1, 3);
+    std::ranges::reverse_view rv1(tv1);
+
+    auto fv2 = std::views::filter(v, [](int n) {return n%2 == 0;});
+    auto tv2 = std::views::take(fv2, 3);
+    auto rv2 = std::views::reverse(tv2);
+
+    // 파이프 라인 형식으로 사용하는게 젤 편하다
+    auto rv3 = v | std::views::filter([](int n) {return n%2 == 0;}) 
+                 | std::views::take(3)
+                 | std::views::reverse; // 파라미터가 없을 경우에는 () 없이 그냥 함수 객체를 그대로 쓴다
+
+    for (auto n : rv1) std::cout << n << ", ";
+    std::cout << std::endl;
+    for (auto n : rv2) std::cout << n << ", ";
+    std::cout << std::endl;
+    for (auto n : rv3) std::cout << n << ", ";
+    std::cout << std::endl;
+}
+
 void views() {
     view_is_pointer();
     view_simple_expression();
@@ -134,4 +180,6 @@ void views() {
     ref_view1();
     ref_view2();
     ref_view3();
+    reverse_view();
+    filter_view();
 }
