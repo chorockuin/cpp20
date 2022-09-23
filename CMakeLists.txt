@@ -8,7 +8,7 @@ SET(PROJECT_VERSION_MINOR 1)
 SET(PROJECT_VERSION_PATCH 0)
 
 # 빌드 형상(Configuration) 및 주절주절 Makefile 생성 여부
-SET(CMAKE_BUILD_TYPE Release)
+SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_VERBOSE_MAKEFILE true)
  
 # 빌드 대상 바이너리 파일명 및 소스 파일 목록
@@ -20,7 +20,8 @@ SET(TARGET_FILE
      "${CMAKE_PROJECT_NAME}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 )
 
-# 컴파일러
+# vscode cmake extension을 설치하면 cmake configuration 할 때
+# 컴파일러를 선택할 수 있는 창을 띄워주는데, 그 때 선택하면 됨
 # SET(CMAKE_C_COMPILER "/usr/bin/gcc-12")
 # SET(CMAKE_CXX_COMPILER "/usr/bin/gcc-12")
 
