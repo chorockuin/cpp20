@@ -31,7 +31,107 @@ void view_simple_expression() {
     }
 }
 
+void ref_view() {
+    std::vector<int> v = {1,2,3,4,5,6,7,8,9,10};
+    // rv는 v의 참조자
+    std::ranges::ref_view rv(v);
+    auto p1 = rv.begin();
+    auto p2 = v.begin();
+
+    std::cout << *p1 << std::endl;
+    std::cout << *p2 << std::endl;
+
+    std::cout << &v << std::endl;
+    std::cout << &(rv.base()) << std::endl;
+
+    // 근데 왜 아래 처럼 진짜 참조를 안쓰고 ref_view를 쓰지? ref_view1()를 보자
+    std::vector<int>& r = v;
+}
+
+void ref_view1() {
+    std::vector<int> v1 = {1,2,3,4,5};
+    std::vector<int> v2 = {6,7,8,9,10};
+
+    // c++의 참조 : 이동(move) 불가능한 참조 = const
+    // 참조는 컴파일 타임에 결정된다는 것과도 일맥상통
+    std::vector<int>& r1(v1);
+    std::vector<int>& r2(v2);
+
+    // r1은 참조자로 변할 수가 없다
+    // 따라서 v2의 내용이 v1으로 복사되어 버린다
+    r1 = r2;
+
+    std::cout << v1[0] << std::endl; // 6
+    std::cout << v2[0] << std::endl; // 6
+
+    // 그러나 이렇게 ref_view를 쓰면 참조 "변수"를 만드는 것과 같다
+    // 즉 포인터 변수를 만드는 것과 같다
+    // c++11의 std::reference_wrapper와 같은 메커니즘
+    std::vector<int> v3 = {1,2,3,4,5};
+    std::vector<int> v4 = {6,7,8,9,10};
+
+    std::ranges::ref_view r3(v3);
+    std::ranges::ref_view r4(v4);
+
+    r3 = r4;
+
+    std::cout << v3[0] << std::endl; // 1
+    std::cout << v4[0] << std::endl; // 6
+    std::cout << r1[0] << std::endl; // 6
+    std::cout << r2[0] << std::endl; // 6
+}
+
+template<typename R>
+class take_view {
+    // 이렇게 참조로 해 놓으면 변경할 수가 없기 때문에... 이렇게 쓰면 안됨
+    // R& rg;
+
+    // 이렇게 변경 가능한 참조를 쓰거나
+    // std::ranges::ref_view<R> rg;
+
+    // 단순히 이렇게 쓰고 ref_view로 추론되도록 타입 추론(deduction)을 만들어 주어야 함
+    R rg; // std::ranges::ref_view<std::vector<int>>
+    int count;
+public:
+    template<typename A>
+    take_view(A&& r, int cnt) : rg(std::forward<A>(r)), count(cnt) {
+    }
+    // ... begin(), end() 등
+};
+
+// 타입 추론(deduction)
+// take_view로 들어온 A type 참조는 A type의 ref_view로 추론하겠다
+// A type 참조를 ref_view에 넣으려면 A type 참조를 A type으로 바꿔야 함
+// 따라서 std::remove_reference_t<A> 를 사용해 참조를 제거하고 넣어준다
+template<typename A>
+take_view(A&&, int) -> take_view<std::ranges::ref_view<std::remove_reference_t<A>>>;
+
+void ref_view2() {
+    std::vector<int> v1 = {1,2,3,4,5};
+    std::vector<int> v2 = {6,7,8,9,0};
+
+    take_view tv1(v1, 3);
+    take_view tv2(v2, 3);
+
+    tv1 = tv2;
+}
+
+void ref_view3() {
+    std::vector<int> v = {1,2,3,4,5};
+    std::ranges::ref_view<std::vector<int>> rv1(v);
+    std::ranges::ref_view rv2(v); // c++17 부터는 v를 보고 deduction 할 수 있으므로, 이렇게 써도 됨
+    auto rv3 = std::views::all(v); // 모두 볼 수 있는 view = ref_view
+
+    std::cout << typeid(rv1).name() << std::endl;
+    std::cout << typeid(rv2).name() << std::endl;
+    std::cout << typeid(rv3).name() << std::endl;
+}
+
 void views() {
     view_is_pointer();
     view_simple_expression();
+    ref_view();
+    ref_view1();
+    ref_view2();
+    ref_view3();
 }
