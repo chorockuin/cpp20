@@ -173,6 +173,45 @@ void filter_view() {
     std::cout << std::endl;
 }
 
+#include <algorithm>
+void range_sort() {
+    std::vector<int> v = {1,3,5,9,2,4,6,8,10};
+    // 이건 vector 자체를 sort
+    std::sort(v.begin(), v.end());
+
+    // range의 sort() 이므로 인자로 range로 전달
+    // v를 직접 전달하기 때문에 결국 vector도 range임을 알 수 있음
+    std::ranges::sort(v);
+    auto fv = v | std::views::filter([](int n) {return n%2==0;});
+    std::ranges::replace_if(fv, [](int n) {return n>0;}, 0);
+    for (auto n : v) std::cout << n << ", ";
+    std::cout << std::endl;
+}
+
+struct People {
+    std::string name;
+    int age;
+};
+
+void range_projection() {
+    std::vector<People> v;
+    v.emplace_back("a", 20);
+    v.emplace_back("s", 30);
+    v.emplace_back("c", 10);
+    v.emplace_back("x", 50);
+    v.emplace_back("b", 40);
+
+    // stl로 이렇게 정렬할 수도 있음
+    // std::ranges::sort(v, [](const People& p1, const People& p2) {return p1.age>p2.age;});
+
+    // c++20 range에서 이런 방법 지원함
+    // 여기서 People::age, People::name 넘기는 걸 projection이라고 부름
+    std::ranges::sort(v, std::less{}, &People::age);
+    for (auto&& p:v) std::cout << p.name << "(" << p.age << ")" << std::endl;
+    std::ranges::sort(v, std::greater{}, &People::name);
+    for (auto&& p:v) std::cout << p.name << "(" << p.age << ")" << std::endl;
+}
+
 void views() {
     view_is_pointer();
     view_simple_expression();
@@ -182,4 +221,6 @@ void views() {
     ref_view3();
     reverse_view();
     filter_view();
+    range_sort();
+    range_projection();
 }
