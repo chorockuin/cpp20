@@ -1,6 +1,7 @@
 #include <iostream>
 #include <coroutine>
 #include <thread>
+#include <chrono>
 
 // Generator는 어떤 규칙을 따라야 함(Coroutine Framework)
 // 1. promise_type이 있어야 하고, 최소 아래 함수들을 구현해야 함
@@ -126,7 +127,7 @@ struct resume_new_thread {
 Generator<int> hoo() {
     std::cout << "Run1 : " << std::this_thread::get_id() << std::endl;
     // 원래라면 그냥 코루틴이 suspend되겠으나
-    // 커스터마이징 한 await_suspend() 함수 내에서
+    // 커스터마이징 한 resume_new_thread::await_suspend() 함수 내에서
     // 새로운 쓰레드를 만들고 코루틴을 resume()하고 있음
     // 코루틴이 resume된 쓰레드는 새로 생성된 쓰레드 이므로
     // 원래 코루틴이 시작된 쓰레드와는 id 값이 다름
@@ -138,8 +139,7 @@ static void custom_await_object() {
     Generator<int> g = hoo();
     g.cr.resume();
     std::cout << "Main : " << std::this_thread::get_id() << std::endl;
-    int n;
-    std::cin >> n;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 void coroutine() {

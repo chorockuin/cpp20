@@ -12,6 +12,8 @@ extern void standard_concepts();
 extern void ranges();
 extern void views();
 extern void coroutine();
+extern void modules();
+extern void stl();
 
 int main() {
     preview();
@@ -28,4 +30,6 @@ int main() {
     ranges();
     views();
     coroutine();
+    modules();
+    stl();
 }
