@@ -11,6 +11,7 @@ extern void syntax_sugar();
 extern void standard_concepts();
 extern void ranges();
 extern void views();
+extern void coroutine();
 
 int main() {
     preview();
@@ -26,4 +27,5 @@ int main() {
     standard_concepts();
     ranges();
     views();
+    coroutine();
 }

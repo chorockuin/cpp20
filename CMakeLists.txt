@@ -35,7 +35,7 @@ elseif(UNIX)
      set(CMAKE_CXX_COMPILER "/usr/bin/gcc-12")
 
      # 컴파일 옵션, 링크 옵션
-     add_compile_options(-std=gnu++20 -g -Wall)
+     add_compile_options(-std=gnu++20 -g -Wall -fcoroutines)
 
      # 링크 라이브러리 (-l)
      link_libraries(stdc++)
