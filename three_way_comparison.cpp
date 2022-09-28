@@ -1,5 +1,5 @@
 /*
-1. three way comparison operator(spaceship operator) 추가
+1. three way comparison operator(spaceship operator) 추가. 우주선 연산자라고도 부름
 */
 
 #include <iostream>
@@ -17,6 +17,7 @@ public:
 
     // c++20 부터는 <=> 하나로 해결
     auto operator <=> (const Int32& other) const { return value <=> other.value; }
+    // 그러나 == 연산자는 오바라이딩 해야 함. 이유는 밑에 나옴
     bool operator == (const Int32& other) const { return value == other.value; }
 
     auto operator <=> (int other) const { return value <=> other; }
@@ -76,7 +77,7 @@ public:
         return x == p.x && y == p.y && z == p.z;
     }
 
-    // 그러나 <=> 연산자 연산자 오버라이딩을 default로 지정하면 컴파일러가 default 구현해 줌. == 연산자도 default 구현해 줌
+    // <=> 연산자 연산자 오버라이딩을 default로 지정하면 컴파일러가 default 구현해 줌. == 연산자도 default 구현해 줌
     // default 구현은 lexicographical compare 방식으로 구현되는데
     // 위 코드 처럼 멤버의 순서대로 비교를 하는 방식으로 구현한다는 뜻
     // auto operator <=> (const Point3D& p) const = default; 
@@ -174,14 +175,14 @@ static void three_way_comparison_operator_ordering4() {
         std::cout << "can't ordered" << std::endl;
     }
 
-    // std::partial_ordering 이 사용되는 대표적인 예가 실수 비교임
+    // std::partial_ordering 이 사용되는 대표적인 예가 실수 값 비교임
     // 실수 값은 경우에 따라 NaN(Not a Number) 값이 되어 <=> 연산을 못하는 경우가 발생할 수 있기 때문에
     // <=> 연산에 std::partial_ordering 리턴 type이 사용됨
     auto r1 = (3.4 <=> 2.1);
     std::cout << typeid(r1).name() << std::endl;
 }
 
-void comparison() {
+void three_way_comparison() {
     three_way_comparison_operator();
     three_way_comparison_operator_impl();
     three_way_comparison_operator_impl2();

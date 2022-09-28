@@ -28,8 +28,8 @@ enum class [[nodiscard]] ErrorCode {OK, WARNING, CRITICAL, FATAL}; // enum 앞�
 ErrorCode goo() { return ErrorCode::CRITICAL; }
 
 static void no_discard2() {
-    goo(); // [[nodiscard]] 덕분에 경고 발생
-    MyType(1, true); // [[nodiscard]] 덕분에 경고 발생
+    goo(); // [[nodiscard]] 덕분에 리턴 값인 ErrorCode 사용 안했다고 경고 발생
+    MyType(1, true); // [[nodiscard]] 덕분에 리턴 객체인 MyType을 사용 안했다고 경고 발생
 }
 
 static int likely(int i) {
@@ -72,9 +72,9 @@ struct EmptyData {
 
 #include <iostream>
 static void no_unique_address() {
-    std::cout << sizeof(Empty) << std::endl;
-    std::cout << sizeof(Data) << std::endl;
-    std::cout << sizeof(EmptyData) << std::endl;
+    std::cout << "sizeof(Empty): " << sizeof(Empty) << std::endl; // 1
+    std::cout << "sizeof(Data): " << sizeof(Data) << std::endl; // 8
+    std::cout << "sizeof(EmptyData): " << sizeof(EmptyData) << std::endl; // 4
 }
 
 template<typename T, typename U> struct PAIR {
@@ -86,12 +86,12 @@ template<typename T, typename U> struct PAIR {
     }
 };
 
-// C++17 클래스 템플릿 타입 deduction 가이드
+// C++17 클래스 템플릿 타입 deduction(타입 추론 지정) 가이드
 template<typename A, typename B> PAIR(A&& a, B&& b) -> PAIR<A, B>;
 
 static void no_unique_address2() {
     // 메모리 주소와 삭제자를 보관
-    // 삭제자는 캡쳐하지 않은 lambda 표현식이기 때문에 empty class
+    // 삭제자는 캡쳐하지 않은 lambda 표현식이기 때문에 static 멤버 데이터도 없고, 가상함수도 없다. 즉, empty class
     PAIR pair(malloc(100), [](void *p) {free(p);});
 
     std::cout << sizeof(pair) << std::endl; // 4 byte + 0 byte(cl에서는 4 byte) = 4 byte

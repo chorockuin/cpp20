@@ -17,16 +17,17 @@ static void lambda_template() {
     std::cout << add1(1.1, 2.2) << std::endl;
     std::cout << add1(1, 2.2) << std::endl;
 
-    std::cout << add2(1, 2) << std::endl;
-    std::cout << add2(1.1, 2.2) << std::endl;
-    std::cout << add2(1, 2.2) << std::endl;
+    std::cout << add2(1, 2) << typeid(add2(1, 2)).name() << std::endl; // int, int -> int
+    std::cout << add2(1.1, 2.2) << typeid(add2(1.1, 2.2)).name() << std::endl; // double, double -> double
+    std::cout << add2(1, 2.2) << typeid(add2(1, 2.2)).name() << std::endl; // int, double -> double
 
-    std::cout << add3(1, 2.2) << std::endl; // no error
+    std::cout << add3(1, 2.2) << typeid(add3(1, 2.2)).name() << std::endl; // int, (int)double -> int
 
     // std::cout << add4<int>(1, 2.2) << std::endl; // syntax error
     // std::cout << add4(1, 2.2) << std::endl; // type error
     // std::cout << add4.operator()(1, 2.2) << std::endl; // type error. 람다 표현식은 결국 () 연산자 호출하는 것
-    std::cout << add4.operator()<int>(1, 2.2) << std::endl; // no error
+    // 암시적인 타입 변환을 막아서 눈에 띄지 않는 오류를 줄인다
+    std::cout << add4.operator()<int>(1, 2.2) << typeid(add4.operator()<int>(1, 2.2)).name() << std::endl; // int, int(double) -> int
 }
 
 #include <memory>
@@ -66,15 +67,16 @@ static void lmabda_default_constructor() {
     int v = 10;
     auto ff = [v](int a, int b) {return a + b;}; // 람다가 지역변수 v를 캡쳐했음
 
-    // decltype(ff) ff1; // 지역변수 v 캡쳐해서 안됨
-    decltype(ff) ff2 = ff; // c++17, c++20 모두 됨
-    // ff2 = ff1; // 지역변수 v 캡쳐해서 안됨
+    // decltype(ff) ff1; // 지역변수 v 캡쳐해서 디폴트 생성 안됨
+    decltype(ff) ff2 = ff; // 복사 생성은 c++17, c++20 모두 됨
+    // ff2 = ff1; // 지역변수 v 캡쳐해서 대입도 안됨.
 }
 
 template<typename T, typename D> 
 class unique_ptr {
     T* obj;
 public:
+    // https://dydtjr1128.github.io/cpp/2019/07/13/Cpp-explicit-keyowrd.html
     explicit unique_ptr(T* p = 0) : obj(p) {}
     ~unique_ptr() {
         D d; // type D의 디폴트 생성자 필요함
@@ -93,16 +95,22 @@ struct Sample {
     int value = 0;
     auto foo() {
         int n = 10;
-        // auto f = [=](int a) { return a + n + value; }; // [=] 표현은 모든 지역 변수를 캡쳐. 그리고 암시적으로 this 포인터도 캡쳐
-        auto f = [=, this](int a) { return a + n + value; }; // 이렇게 명시적으로 this 포인터 캡쳐를 알려야 경고가 뜨지 않음
-        std::cout << sizeof(f) << std::endl; // n + this 포인터. 따라서 size는 8
+        // auto f = [=](int a) { return a + n + value; }; // [=] 표현은 모든 지역 변수를 캡쳐(복사). 그리고 암시적으로 this 포인터도 복사
+        auto f = [=, this](int a) { return a + n + value; }; // this 포인터 복사. 이렇게 명시적으로 this 포인터 복사를 알려야 경고가 뜨지 않음
+        // n = int = 4byte
+        // this = 4byte(32bit) or 8byte(64bit)
+        // 따라서 sizeof(n + this) = 8byte(32bit) or 16byte(64bit with 8byte align)
+        std::cout << "foo f size: " << sizeof(f) << std::endl; 
         return f;
     }
 
     auto bar() {
         int n = 10;
-        auto f = [=, *this](int a) { return a + n + value; }; // 명시적으로 this를 써 주자
-        std::cout << sizeof(f) << std::endl; // 모든 지역 변수 뿐 아니라 암시적 this 포인터도 캡쳐. 따라서 size는 8
+        auto f = [=, *this](int a) { return a + n + value; }; // this 포인터를 복사하는 것이 아니라 this가 가리키는 값을 복사
+        // n = int = 4byte
+        // *this = n = int = 4byte
+        // 따라서 sizeof(n + *this) = 8byte
+        std::cout << "bar f size: " << sizeof(f) << std::endl;
         return f;
 
     }

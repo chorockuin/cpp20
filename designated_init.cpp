@@ -1,6 +1,14 @@
 #include <iostream>
 #include <type_traits>
 
+/*
+Aggregate Initialization이란?
+- 집합체(구조체 같은 값으 집합체) 초기화
+Designated Initialization이란?
+- 지정된 초기화. 구조체 내 변수를 지정해서 초기화 할 수 있음
+- Aggregate Initialization이 가능한 구조체만 가능
+*/
+
 struct Point1 {
     int x, y;
 };
