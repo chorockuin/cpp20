@@ -17,11 +17,11 @@ extern void stl();
 extern void exams();
 
 int main() {
-    // preview();
-    // lambda();
-    // attributes();
-    // three_way_comparison();
-    // designated_init();
+    preview();
+    lambda();
+    attributes();
+    three_way_comparison();
+    designated_init();
     const_expression();
     etc();
     require_clauses();
