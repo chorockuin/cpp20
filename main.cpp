@@ -11,6 +11,9 @@ extern void syntax_sugar();
 extern void standard_concepts();
 extern void ranges();
 extern void views();
+extern void coroutine();
+extern void modules();
+extern void stl();
 extern void exams();
 
 int main() {
@@ -20,12 +23,15 @@ int main() {
     // three_way_comparison();
     // designated_init();
     const_expression();
-    // etc();
-    // require_clauses();
-    // concepts();
-    // syntax_sugar();
-    // standard_concepts();
-    // ranges();
-    // views();
+    etc();
+    require_clauses();
+    concepts();
+    syntax_sugar();
+    standard_concepts();
+    ranges();
+    views();
+    coroutine();
+    modules();
+    stl();
     exams();
 }
