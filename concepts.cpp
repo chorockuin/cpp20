@@ -7,14 +7,15 @@ template<typename T>
 concept GreaterThan4 = sizeof(T) >= 4;
 
 // template 인자 T가 4이상의 값을 가지는 컨셉(concept)을 요구(requires)함
-// requires 이후에는 concept 외에 trats도 올 수가 있음
 template<typename T> requires GreaterThan4<T>
 static void foo(T arg) {
 }
 
+// requires 이후에는 concept 외에 trats도 올 수가 있음
 template<typename T>
 concept Integral = std::is_integral_v<T>;
 
+// int형을 강제하는 requires. traits로 써도 되고 concept으로 써도 됨
 // template<typename T> requires std::is_integral_v<T>
 template<typename T> requires Integral<T>
 static void bar(T a) {
@@ -65,7 +66,7 @@ concept LessThanComparable1 = requires(T a, T b) {
 // < 연산이 가능해야 하고 결과는 bool이어야 한다는 concept
 template<typename T>
 concept LessThanComparable2 = requires(T a, T b) {
-    {a < b} -> std::convertible_to<bool>;
+    {a < b} -> std::convertible_to<bool>; // -> 표시는 하나의 값으로 표현되는 expression을 의미
 };
 
 // ==, != 연산이 가능하고 결과는 bool이어야 한다는 concept
@@ -82,8 +83,8 @@ concept Container = requires(T c) {
     c.end();
 };
 
-template<typename T>
 // T에는 value_type이 있어야 한다는 concept
+template<typename T>
 concept HasValueType = requires {
     typename T::value_type;
 };
@@ -121,6 +122,7 @@ static void ioo(T a) {
     std::cout << "2" << std::endl;
 }
 
+
 template<typename T>
 concept Concept3 = Concept1<T> && sizeof(T) < 8;
 
@@ -134,11 +136,13 @@ static void joo(T a) {
     std::cout << "3" << std::endl;
 }
 
+
 template<typename T> requires Concept1<T>
 static void koo(T a) {
     std::cout << "1" << std::endl;
 }
 
+// 이렇게 requires 절에 concept과 조건을 적어도 됨. 참고로 조건은 반드시 괄호로 묶여 있어야 함
 template<typename T> requires Concept1<T> && (sizeof(T) < 8)
 static void koo(T a) {
     std::cout << "1 requires" << std::endl;
@@ -152,8 +156,7 @@ static void ordering() {
     // Concept3 조건은 Concept1 조건을 포함하므로 제약이 더 많음
     // 제약이 더 많은 것이 선택됨
     joo(3);
-
-    // requires 절에 바로 조건을 적어도 되는데
+    
     // Concept1 보다 Concept1 + sizeof(T) < 8 이 제약이 더 많음
     // 제약이 더 많은 것이 선택됨
     koo(3);

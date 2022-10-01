@@ -3,6 +3,8 @@
 #include <string_view>
 
 static void starts_with_ends_with() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+    
     std::string s{"file_name.txt"};
     std::string_view sv{s};
 
@@ -15,6 +17,8 @@ static void starts_with_ends_with() {
 
 #include <set>
 static void contains() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::set<int> s = {1,2,3,4,5,6,7,8,9,10};
     std::multiset<int> ms {1,2,3,4,5,6,7,8,9,10};
 
@@ -39,6 +43,8 @@ static void contains() {
 // 반복자가 가리키는 타입의 변수 만들기
 template<typename T>
 void foo(const T& iterator) {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     // c++98 style
     // T가 그냥 포인터면 아래 에러남
     // typename T::value_type n;
@@ -61,6 +67,8 @@ void foo(const T& iterator) {
 // 컨테이너가 저장하는 타입 구하기
 template<typename T>
 void goo(const T& container) {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     // c++98
     // T가 그냥 배열이면 아래 에러남
     // typename T::value_type n;
@@ -73,6 +81,8 @@ void goo(const T& container) {
 }
 
 static void iterator_value_type() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::vector<int> v = {1,2,3,4,5};
     int x[5] = {1,2,3,4,5};
 
@@ -84,6 +94,9 @@ static void iterator_value_type() {
 }
 
 #include <type_traits>
+// List는 생성자 2개를 가지는데,
+// 1. 사이즈와 타입을 받는 생성자
+// 2. 임의의 타입인 레퍼런스를 받는 생성자
 template<typename T> class List {
 public:
     List(std::size_t sz, T v) {
@@ -103,8 +116,10 @@ public:
 template<typename C> List(C&&) -> List<std::ranges::range_value_t<C>>;
 
 static void range_value_type() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     List<int> s1(10, 3); // c++17 이전에는 T를 명시해줘야 했다
-    List s2(10, 3); // c++17 이후에는 생성자 인수롤 보고 T를 추론한다
+    List s2(10, 3); // c++17 이후에는 생성자 인수롤 보고 T를 추론한다. 3이니까 int형
 
     std::vector v = {1,2,3};
     // 컨테이너를 받아서 생성하는 경우
@@ -115,12 +130,14 @@ static void range_value_type() {
 
 #include <algorithm>
 static void new_algorithm() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
 
     // c++98 remove-erase idioms
-    // vector size는 그대로
+    // 아래 코드를 수행하면 vector의 값들은 바뀌지만 vector의 size는 그대로다
     auto p = std::remove_if(v1.begin(), v1.end(), [](int n) {return n%2==0;});
-    // 이렇게 해야 vector size가 정리된다
+    // 이렇게 erase()까지 해야 실제로 vector size가 정리된다
     v1.erase(p, v1.end());
 
     std::vector<int> v2 = {1,2,3,4,5,6,7,8,9,10};
@@ -133,11 +150,11 @@ static void new_algorithm() {
         std::cout << n << ", ";
     std::cout << std::endl;
 
-    // 사이즈 변수 값만 바뀐 것이다
+    // 하지만 실제로 메모리 크기가 줄었을까? vector type이기 때문에 사이즈 변수 값만 바뀐 것이다
     std::cout << v2.size() << std::endl;
     // 메모리 크기는 그대로 10으로 잡혀있다
-    // 그러나 vector가 아닌 list를 사용했다면 4로 줄었을 것이다
     std::cout << v2.capacity() << std::endl;
+    // vector가 아닌 list를 사용했다면 메모리 크기도 4로 줄었을 것이다
 }
 
 class Point {
@@ -152,6 +169,8 @@ public:
 };
 
 static void construct_at() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     // operator new를 사용하면 생성자는 호출하지 않고 메모리만 할당할 수 있음
     Point *p1 = static_cast<Point *> (operator new(sizeof(Point)));
 
@@ -168,11 +187,15 @@ static void construct_at() {
 
 template<typename T>
 void show(T& c) {
-    for (auto n:c) std::cout << n << ", ";
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
+    for (auto n:c) std::cout << n << ",";
     std::cout << std::endl;
 }
 
 static void shift() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::vector v1{1,2,3,4,5,6,7,8,9,10};
     show(v1);
 
@@ -185,6 +208,8 @@ static void shift() {
 
 #include <utility>
 static void compare_less() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     int sn = 0;
     unsigned int un = 0;
 
@@ -197,6 +222,8 @@ static void compare_less() {
 
 #include <memory>
 static void make_shared() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::shared_ptr<int> sp1(new int); // worse
     std::shared_ptr<int> sp2 = std::make_shared<int>(); // better
     // https://infoscoco.com/48
@@ -218,6 +245,8 @@ static void make_shared() {
 struct Rect {int l, t, r, b;};
 
 static void make_shared1() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     Rect *p1 = new Rect; // default 초기화(쓰레기 값)
     Rect *p2 = new Rect{}; // value 초기화(0으로 초기화)
 
@@ -234,6 +263,8 @@ static void make_shared1() {
 
 #include <array>
 static void to_array() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     int x[10] = {1,2,3,4,5,6,7,8,9,10};
     auto a1 = std::to_array(x); // std::array<int, 10>
     auto a2 = std::to_array("foo"); // std::array<char, 4>
@@ -246,6 +277,8 @@ static void to_array() {
 
 #include <numeric>
 static void midpoint() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::cout << std::midpoint(1,3) << std::endl;
     std::cout << std::midpoint(1,10) << std::endl;
     std::cout << std::midpoint(10,2344453) << std::endl;
@@ -255,6 +288,8 @@ static void midpoint() {
 #include <functional>
 
 static void hoo(int a, int b, int c) {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     printf("hoo:%d %d %d\n", a, b, c);
 }
 
@@ -277,30 +312,39 @@ static void bind_front() {
 // std::string_view와 유사
 // std::string_view는 읽기만 가능하지만, std::span은 읽기/쓰기 다 가능
 static void ioo(std::span<int> sp) {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::cout << sp.size() << std::endl;
     sp[0] = 10;
 }
 
 static void span1() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     std::vector<int> x{1,2,3,4,5,6,7,8,9,10};
     ioo(x);
 }
 
 static void span2() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     int x[10] = {1,2,3,4,5,6,7,8,9,10};
 
     std::span<int> sp1(x); // ok T : int
     std::span<int, 10> sp2(x); // ok T : int[10]
 
     std::cout << sizeof(sp1) << std::endl; // type저장(8) + size저장(8) = 16
+
     // type이 int[10]이므로 size는 저장할 필요가 없음
     std::cout << sizeof(sp2) << std::endl; // type저장(8) = 8
 
+    // sp1의 경우 몇 개의 요소를 가지고 있는지 명시하지 않았기 때문에 -1
     std::cout << sp1.extent << std::endl; // -1
     std::cout << sp2.extent << std::endl; // 10
 
     std::cout << sp1.size() << std::endl; // 10
     std::cout << sp1.size_bytes() << std::endl; // 40
+
     std::cout << sp2.size() << std::endl; // 10
     std::cout << sp2.size_bytes() << std::endl; // 40
 
@@ -312,6 +356,8 @@ static void span2() {
 }
 
 void joo(std::span<int> sp) {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+
     // std::span<byte> 타입으로 변환
     // auto p = std::as_bytes(sp); // p는 const
     auto p = std::as_writable_bytes(sp);
@@ -320,6 +366,8 @@ void joo(std::span<int> sp) {
 }
 
 static void span3() {
+    std::cout << std::endl << __FUNCTION__ << std::endl;
+    
     int x[10]{1,2,4,5,6,7,8,9,10};
     int *p = new int[10]{1,2,4,5,6,7,8,9,10};
 

@@ -24,7 +24,7 @@ int main() {
     // designated_init();
     // const_expression();
     // etc();
-    require_clauses();
+    // require_clauses();
     // concepts();
     // syntax_sugar();
     // standard_concepts();
@@ -32,6 +32,6 @@ int main() {
     // views();
     // coroutine();
     // modules();
-    // stl();
+    stl();
     // exams();
 }

@@ -18,7 +18,7 @@ void f4(std::integral auto a) {
     std::cout << typeid(a).name() << std::endl;
 }
 
-// 이건 에러남
+// 이건 에러남. 핵심은 auto type
 // void f5(std::integral a) {
 // }
 

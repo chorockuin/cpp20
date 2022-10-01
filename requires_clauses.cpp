@@ -36,12 +36,14 @@ static void error_message() {
 }
 
 static double gcd3(double a, double b) { return 0; }
+
 template<typename T>
 T gcd3(T a, T b) {
     return b == 0 ? a : gcd3(b, a%b);
 }
 
 static double gcd4(double a, double b) { return 0; }
+
 template<typename T> requires std::is_integral_v<T>
 T gcd4(T a, T b) {
     return b == 0 ? a : gcd4(b, a%b);
@@ -54,6 +56,7 @@ void not_create_type_code_from_template() {
 
     gcd4(4.2, 2.1); // return 0; 하는 double type 버전 사용
     gcd4(4, 2); // int type으로 template 찍어냄
+
     // requires 절 때문에 float type으로 template 찍어내지 못함
     // 그러나 에러가 나진 않고, double type 버전을 암시적으로 사용하게 됨
     // 이를 SFINAE(Substitution Failure Is Not An Error) - "치환에 실패한 것은 에러가 아님" 이라고 함
@@ -81,11 +84,13 @@ void function_overloading_with_requires() {
     hoo(Test());
 }
 
+// T 포인터가 아니면 T 값을 그냥 출력
 template<typename T> requires (!std::is_pointer_v<T>)
 void printv(const T& arg) {
     std::cout << arg << std::endl;
 }
 
+// 포인터면 T 값과 T가 가리키는 값을 역참조해서 출력
 template<typename T> requires std::is_pointer_v<T>
 void printv(const T& arg) {
     std::cout << arg << " : " << *arg << std::endl;
@@ -164,7 +169,7 @@ void condition() {
 }
 
 template<typename T>
-void g(T a) requires (sizeof(T) > 4) {
+void g(T a) requires (sizeof(T) > 4) { // requires 절을 template<typename T> 뒤에 쓰지 않고, 이렇게 함수 뒤에 써도 됨
 }
 
 void position() {
