@@ -11,7 +11,8 @@ public:
     // explicit Wrapper(T value) : data (value) {
     // }
     // c++20에서는 explict에 bool 조건을 넣을 수 있음
-    explicit(std::is_integral_v<T>) Wrapper(T value) : data (value) {
+    // 즉, bool 조건이 true 일 때만 explict이 발동됨
+    explicit(std::is_integral_v<T>) Wrapper(T value) : data(value) {
     }
 };
 
@@ -20,14 +21,16 @@ static void explicit_bool() {
     Wrapper<std::string> w0(std::string("abcd"));
     Wrapper w1("abcd"s); // c++17 부터 template 인자 추론 가능
     Wrapper w2{"abcd"s}; // uniform 초기화. 암시적 type 변환 방지
-    // 복사 초기화
+    
+    // 아래 type들이 std::string 이기 때문에 explict 먹히지 않음
+    // 복사 초기화 가능
     Wrapper w3 = "abcd"s;
     Wrapper w4 = {"abcd"s};
-    // 암시적 변환
+    // 암시적 변환도 가능
     w1 = "xyz"s;
 
-    Wrapper w5{10}; // ok
-    // Wrapper w6 = 10; // explicit(std::is_integral_v<T>) 때문에 error 남
+    Wrapper w5{10}; // 10은 int이니 explicit이 먹히는데, 직접 초기화 했기 때문에 최종적으로 compile pass
+    // Wrapper w6 = 10; // 마찬가지로 explicit이 먹히는데, 복사 초기화를 시도했기 때문에 error 남
 }
 
 static int foo() { return 0; }
@@ -73,7 +76,7 @@ static std::string_view to_string(Color c) {
 static void using_enum() {
     int n1 = RED;   // ok
     // int n2 = Red;   // error (scoped enum)
-    // int n3 = Color::Red;    // error (scoped enum)
+    // int n3 = Color::Red;    // type이 맞지 않아 error (scoped typed enum)
     Color c = Color::Red;   // ok
 }
 

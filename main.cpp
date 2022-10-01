@@ -17,21 +17,21 @@ extern void stl();
 extern void exams();
 
 int main() {
-    preview();
-    lambda();
-    attributes();
-    three_way_comparison();
-    designated_init();
-    const_expression();
-    etc();
+    // preview();
+    // lambda();
+    // attributes();
+    // three_way_comparison();
+    // designated_init();
+    // const_expression();
+    // etc();
     require_clauses();
-    concepts();
-    syntax_sugar();
-    standard_concepts();
-    ranges();
-    views();
-    coroutine();
-    modules();
-    stl();
-    exams();
+    // concepts();
+    // syntax_sugar();
+    // standard_concepts();
+    // ranges();
+    // views();
+    // coroutine();
+    // modules();
+    // stl();
+    // exams();
 }

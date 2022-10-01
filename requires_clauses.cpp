@@ -12,7 +12,7 @@ static void intro() {
     foo(1);
     foo(3.4);
     goo(1);
-    // goo(3.4); // requires 절 조건에 부합하지 않으므로 error
+    // goo(3.4); // int 형이어야 한다는 requires 절 조건에 부합하지 않으므로 error
 }
 
 template<typename T>
