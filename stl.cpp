@@ -329,14 +329,15 @@ static void span2() {
     std::cout << std::endl << __FUNCTION__ << std::endl;
 
     int x[10] = {1,2,3,4,5,6,7,8,9,10};
+    std::cout << typeid(x).name() << ": " << sizeof(x) << std::endl; // int array type, size = 40
 
     std::span<int> sp1(x); // ok T : int
     std::span<int, 10> sp2(x); // ok T : int[10]
 
-    std::cout << sizeof(sp1) << std::endl; // type저장(8) + size저장(8) = 16
+    std::cout << typeid(sp1).name() << ": " << sizeof(sp1) << std::endl; // type저장(8) + size저장(8) = 16
 
     // type이 int[10]이므로 size는 저장할 필요가 없음
-    std::cout << sizeof(sp2) << std::endl; // type저장(8) = 8
+    std::cout << typeid(sp2).name() << ": " << sizeof(sp2) << std::endl; // type저장(8) = 8
 
     // sp1의 경우 몇 개의 요소를 가지고 있는지 명시하지 않았기 때문에 -1
     std::cout << sp1.extent << std::endl; // -1
@@ -349,6 +350,7 @@ static void span2() {
     std::cout << sp2.size_bytes() << std::endl; // 40
 
     int *p = new int[10]{1,2,3,4,5,6,7,8,9,10};
+    std::cout << typeid(p).name() << ": " << sizeof(p) << std::endl; // int pointer type, size = 8
 
     // std::span<int> sp3(p); // error
     std::span<int> sp4(p, 10); // ok

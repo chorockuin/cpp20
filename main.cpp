@@ -32,6 +32,6 @@ int main() {
     // views();
     // coroutine();
     // modules();
-    stl();
-    // exams();
+    // stl();
+    exams();
 }

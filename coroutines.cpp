@@ -30,6 +30,8 @@ struct Generator {
     std::coroutine_handle<promise_type> cr;
 
     Generator(std::coroutine_handle<promise_type> h) : cr(h) {}
+    // coroutine에서 caller로 돌아갈 때, corutine은 사용하던 데이터들을 heap에 백업해 둔다.
+    // 따라서 corutine이 제거될 때 heap도 정리해 줘야하기 때문에 destroy()를 호출한다
     ~Generator() {if(cr) cr.destroy();}
 
     class Iter {
@@ -53,36 +55,38 @@ struct Generator {
     std::default_sentinel_t end() {return {};}
 };
 
+// 어떤 함수를 coroutine으로 사용하려면,
+// c++에서 정의한 규칙대로 만든 사용자 정의 타입(Generator<int>와 같은)을 반환해야 한다
 Generator<int> foo(int n) {
     std::cout << "\tRun 1 :" << std::this_thread::get_id() << std::endl;
-    co_await std::suspend_always{};
-    // 위 코드는 아래와 같은 표현
-    // co_await std::suspend_always{};
+    co_await std::suspend_always{}; // 실행을 멈추고 caller로 돌아감
     std::cout << "\tRun 2 :" << std::this_thread::get_id() << std::endl;
     co_yield 10;
     std::cout << "\tRun 3 :" << std::this_thread::get_id() << std::endl;
-
-    // 위 코드들은 컴파일러가 아래와 같이 변환함
-    // Generator::promise_type pm;
-    // Generator g = pm.get_return_object();
-    // co_await pm.initial_suspend();
-    // try {
-    //     std::cout << "\tRun 1 :" << std::endl;
-    //     std::suspend_always awaiter;
-    //     if (!awaiter.await_ready()) {
-    //        awaiter.await_suspend(g.cr)
-    //     }
-    //     awaiter.await_resume();
-    //     std::cout << "\tRun 2 :" << std::endl;
-    //     co_await pm.yield_value(10)
-    //     std::cout << "\tRun 3 :" << std::endl;
-    // }
-    // catch (...) {
-    //     pm.unhandled_exception();
-    // }
-    // pm.return_void();
-    // co_await pm.final_suspend();
 }
+// 위 코드는 컴파일러가 아래와 같이 변환한다
+// Generator<int> foo(int n) {
+//     Generator::promise_type pm;
+//     Generator g = pm.get_return_object();
+//     co_await pm.initial_suspend(); // 여기서 멈추고 caller로 돌아감. 생성한 Generator도 리턴됨. 여기서 caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
+//     try {
+//         std::cout << "\tRun 1 :" << std::this_thread::get_id() << std::endl;
+//         std::suspend_always awaiter;
+//         if (!awaiter.await_ready()) {
+//         awaiter.await_suspend(g.cr)
+//         }
+//         awaiter.await_resume(); // 여기서 멈추고 caller로 돌아감. caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
+//         std::cout << "\tRun 2 :" << std::this_thread::get_id() << std::endl;
+//         co_await pm.yield_value(10) // 10이라는 값을 value에 넣고난 뒤 멈추고 caller로 돌아감. caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
+//         std::cout << "\tRun 3 :" << std::this_thread::get_id() << std::endl;
+//     }
+//     catch (...) {
+//         pm.unhandled_exception();
+//     }
+//     pm.return_void();
+//     co_await pm.final_suspend();
+// }
+
 
 static void intro() {
     Generator<int> g = foo(10);
