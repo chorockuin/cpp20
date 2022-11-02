@@ -3,15 +3,15 @@
 #include <thread>
 #include <chrono>
 
-// Generator는 어떤 규칙을 따라야 함(Coroutine Framework)
-// 1. promise_type이 있어야 하고, 최소 아래 함수들을 구현해야 함
+// 코루틴에서 사용하는 객체는 다음과 같은 규칙을 따라야 함(coroutine framework)
+// 1. promise_type이 정의되어 있어야 하고, 최소 아래 함수들을 구현해야 함
 //    get_return_object()
 //    initial_suspend()
 //    unhandled_exception()
 //    return_void()
 //    final_suspend()
 // 2. std::coroutine_handle<> 멤버가 있어야 함
-// 3. 인자가 한 개인 생성자
+// 3. 인자가 한개인 생성자 존재
 // 4. 소멸자에서 coroutine 파괴
 template<typename T>
 struct Generator {
@@ -30,7 +30,7 @@ struct Generator {
     std::coroutine_handle<promise_type> cr;
 
     Generator(std::coroutine_handle<promise_type> h) : cr(h) {}
-    // coroutine에서 caller로 돌아갈 때, corutine은 사용하던 데이터들을 heap에 백업해 둔다.
+    // coroutine에서 caller로 돌아갈 때, corutine은 사용하던 데이터들을 heap에 백업해 둔다
     // 따라서 corutine이 제거될 때 heap도 정리해 줘야하기 때문에 destroy()를 호출한다
     ~Generator() {if(cr) cr.destroy();}
 
@@ -66,16 +66,16 @@ Generator<int> foo(int n) {
 }
 // 위 코드는 컴파일러가 아래와 같이 변환한다
 // Generator<int> foo(int n) {
-//     Generator::promise_type pm;
-//     Generator g = pm.get_return_object();
-//     co_await pm.initial_suspend(); // 여기서 멈추고 caller로 돌아감. 생성한 Generator도 리턴됨. 여기서 caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
+//     Generator::promise_type pm; // promise_type 객체를 정의하고
+//     Generator g = pm.get_return_object(); // 해당 객체의 get_return_object() 메소드에서는 Generator 객체를 만들어 반환한다
+//     co_await pm.initial_suspend(); // 여기서 멈추고 caller로 돌아감. 생성한 Generator도 리턴됨. 여기서 caller가 resume하길 기다림. 이후 caller가 resume하면 아래 루틴이 다시 진행됨
 //     try {
 //         std::cout << "\tRun 1 :" << std::this_thread::get_id() << std::endl;
 //         std::suspend_always awaiter;
 //         if (!awaiter.await_ready()) {
 //         awaiter.await_suspend(g.cr)
 //         }
-//         awaiter.await_resume(); // 여기서 멈추고 caller로 돌아감. caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
+//         awaiter.await_resume(); // 여기서 멈추고 caller로 돌아감. caller가 resume하길 기다림. 이후 caller가 resume하면 아래 루틴이 다시 진행됨
 //         std::cout << "\tRun 2 :" << std::this_thread::get_id() << std::endl;
 //         co_await pm.yield_value(10) // 10이라는 값을 value에 넣고난 뒤 멈추고 caller로 돌아감. caller가 resume하길 기다림. 이후 caller가 resume하면 coroutine 다시 진행됨
 //         std::cout << "\tRun 3 :" << std::this_thread::get_id() << std::endl;
